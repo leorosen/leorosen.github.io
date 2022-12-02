@@ -1,0 +1,144 @@
+<TITLE>
+Flow-Switching - a new old idea?}}
+</TITLE>
+<AUTHOR>
+Written by Leonid Rozenboim, initially published on Jul 23, 2018
+</AUTHOR>
+<P>
+This is a short post containing some thoughts about the challenges in contemporary data networks based around flows.
+</P>
+<H1>
+History
+</H1>
+
+<P>
+Initially, electronic communications had no switching - the manual telegraph was organized as a collection of point-to-point lines, with human operators manually relaying messages at intermediate stations.
+Telephone however very quickly caught on to the idea that after a brief exchange with a human operator, a circuit can be connected between two end-points, and greatly reduce the number of humans needed to operate a network (relative to telegraph), which in turn reduced the cost of service dramatically. Subsequently the idea got automated, and the human operators were entirely taken out of the cost equation, making telephone service affordable by the entire middle class.
+</P>
+<P>
+The idea of separating control plane from the data plane had been first introduced in automated long-distance telephone switches. Long-distance circuits were very expensive, and the need to utilize them efficiently required their automation to employ significantly more complex decision logic, which is why the call routing logic was taken out of the switching element, hence creating the control plane entity.
+<A HREF="https://en.wikipedia.org/wiki/Telephone_exchange">
+History of telephone exchanges</A>
+</P>
+<P>
+Data networking has evolved quite similarly. Initial data connections where conducted over leased lines (dedicated analogue voice circuits equipped with modems at each end) and over dial-up connections (using the public telephone switched network (PSTN) for on-demand analogue voice circuit establishment).
+The first public digital networks, services designed for data communications, were too circuit switched -
+<A HREF="https://en.wikipedia.org/wiki/X.25"> X.25</A> was modeled after the PSTN, allowing on-demand establishment of Switched Virtual Circuits (SVCs) between terminals, which would subsequently carry bi-directional data stream, and the PSDN (Public Switched Data Network) term was thus coined.
+</P>
+<P>
+In contrast, the ARPAnet which seeded the evolution of the Internet, was designed as a packet switched network, which revolutionized the industry. The interconnecting devices comprising the Internet until recently formed symmetric distributed systems, each device containing all the traffic routing logic, somewhat similar to the telephone step-by-step switch invented by <A HREF="https://en.wikipedia.org/wiki/Almon_Brown_Strowger"> Strowger</A>
+(the undertaker). Subsequently the network routers evolved into devices each containing a control-plane and some data-plane elements.
+</P>
+
+<H1>Comparison</H1>
+
+<P>
+Here are the basic attributes of a circuit-switched data network:
+<UL>
+<LI>A connection between two parties needs to be established prior to any data exchange between those parties.
+<LI>Each data package (packet) is transmitted over a previously established bi-directional connection, and is highly likely to succeed due to congestion-free path made from a series of dedicated resources.
+<LI>Connection establishments are rare in comparison to data exchanges, and may incorporate complex decision logic (for efficiency, security, availability).
+<LI>Data exchange can be made simple and predictable, by reserving network resources during connection establishment
+<LI>Circuit-switched network is perceived as expensive due to their complexity and under-utilization of network bandwidth resulting from resource reservation.
+</UL>
+<P>
+In contrast, here are the key principles of packet switching:
+</P>
+<UL>
+<LI>Data exchange can be attempted by any party at any time. Because no prior hand-shaking has taken place, the success of said data exchange can not be guaranteed (termed best-effort service).
+<LI>Performance is subject to temporal resource availability (<A HREF="https://en.wikipedia.org/wiki/Statistical_time-division_multiplexing"> 
+statistical multiplexing</A>);
+and the amount of resources is independent on the number of communicating entities (users).
+<LI>Routing decisions are made independently for each packet by each node in the network, using the information and resources available at that point in time on the routing node.
+<LI>Enabling novel multi-party communications paradigms (e.g. peer-to-peer, multicast).
+<LI>Packet-switched networks are perceived to be cheaper due to simpler principle of operation, and high utilization of the network resources and circuits (links).
+</UL>
+</P>
+
+<H1>Enter Flow-Switching</H1>
+
+<P>
+The aim of this essay is to show the similarities between the emergent flow-switching evolution of packet-switched networks and circuit switching, hence this can be viewed as the resurrection of the old and proven connection-oriented network methodology.
+</P><P>
+In a way, the introduction of flow switching may be viewed as an inevitable back-peddling: the process of mitigating the challenges of packet switching, and thereby re-introducing elements of circuit switching back into the mix, and trading off the benefits of packet switching for the benefits of circuit switching while not fully appreciating the compromise.
+</P><P>
+In other words, when we add a circuit-based mechanism to a network, we are increasing its cost and complexity, and we should benefit from a fuller understanding while experiencing these changes, which can be seen as evolution or regression, depending on one's point of view.
+</P><P>
+The first elements of circuit-switching where introduced to the Internet with the first firewalls (e.g. Checkpoint, circa 1993). With every packet standing on its own, it is impossible to differentiate legitimate traffic from malicious, and so a circuit-switching (stateful) gateway is introduced to the private/public network perimeter.
+</P><P>
+That in turn had changed how people designed distributed applications, if they are expected to operate outside of a private domain, and forced a stricter adherence to circuit-switched client-server semantics. Multicast, source-routing are a few of the packet-switched tools fell by the side way as a result.
+</P><P>
+More importantly, with circuit-switching also comes an increase in cost, and a limitation on the flexibility of communications. Each "flow" now has to be tracked in a memory object in every flow-aware network node, and since the amount of memory is finite, a limit on the total number of flows, and thus number of communicating entities is imposed as well as the extra cost paid for additional memory.
+</P><P>
+Another point at which a form of circuit-switching element was introduced was the proposition of the RSVP resource-reservation protocol, as a mechanism to deliver QoS. The idea is eerily reminiscent to telephone circuit switching - higher priority would be awarded to packets that being to a priori established connections, each with provisioned network resources for the duration of a connection.
+Flow switching offers an opportunity ti improve performance - by migrating an increasing portion of intelligence (including the amount of memory-resident data) over to the control-plane, and by making the data-plane simpler (and dumber), we can try to increase performance while also increasing complexity, in comparison to traditional packet switching.
+</P><P>
+At this point, control-plane no longer is just involved in connection establishment (as did the human telephone operator) and teardown. Now, in order to accommodate an increasing variety in usage patterns, the control-plane must also intervene in the handling of certain exceptional packet types (this can be likened to having the human telephone operator double as a simultaneous language translator, and intervene every time one of the parties fails to understand the other's accent).
+</P>
+
+<H1>Flow vs. Circuit Switching</H1>
+
+<P>
+The key difference between traditional circuit switching and modern flow switching is the implicit nature of flow establishment procedure, largely hidden from the end-user, in stark contrast to traditional call establishment process which is fully transparent and controlled by the end-user. There are numerous ramifications to this distinction. End-user control of connection establishment provides a reasonable level of consent by the end-user to the potentially associated financial transaction (i.e. billing record) that might result from the service. Also, the explicit call establishment process serves as a conduit for error reporting - if there is a congestion, a shortage of network resources that a call is requiring, the system will fail the call and inform the end-user of the failure. In flow switching, a flow is automatically detected by a network element, which differ widely in how they define a flow, and in the way the respond to a congestion.
+</P><P>
+For example, in some systems a flow consists of a 5-tuple match (a.k.a. a Layer-4 flow), while on others, a flow is just made of 2-tuples (typically a Layer-3 flow).
+Some network elements, when encountering lack of memory space in its flow table will respond with a failure to establish a flow, leading to end-user connection failure, while other implementations resort to allowing the communications with a coarser flow definition, or by allowing a connection without flow tracking at all ( Worst of all, in some systems when lacking space for a new flow insertion, either the control-plane would get involved (which would impact stability and performance) or the aging process get s accelerated, and older flows will be disconnected sooner.
+</P>
+
+<H1>Advantages of Flow Switching</H1>
+
+<P>
+Flow switching in packet networks is introduced to gain<I>insight</I>into the
+<I>context</I> of a packet, and using that context mitigate the numerous vulnerabilities of packet-switching allowing for a variety of <I>malicious</I> acts.
+Flow switching in packet networks became <I>indispensable</I> for mitigating the perpetually-looming <I>IP address shortage</I>crisis.
+By identifying individual Layer-4 connections, it becomes possible to masquerade a fairly large number of actual end-point systems behind a proxy, translating addresses and creating a natural choke-point where additional policy enforcement measures can be effectively deployed (NAT Gateways).
+</P> <P>
+Flow switching can also be a powerful tool for performance improvements, it can greatly reduce the amount of computation needed to decide the fate and path of a single packet by simply identifying the flow to which the packet belongs, and then replicating the action recorded for prior packets in that same flow.
+Flows can also be used in various mechanisms that improve customer experience, including traffic-shaping (which reduce packet-loss probability), flow control, and fairness mechanisms vying for a fair allocation of network resources between customers and hence mitigating the other weaknesses of packet switching vs. traditional circuit switching.
+</P>
+
+<H1>Concerns with Flow Switching</H1>
+<P>
+The main concern with flows, is their introduction into the network infrastructure absent a change in customer-facing semantics. The hidden and implicit nature of flow switching semantics inside the network elements, is not <I>just</I> inconsistent with <I>each other</I> but also inconsistent with the end-user expectations.
+Also, since the end-user semantics do not impose any explicit limitations on flow count, duration, endurance, application developers are forced to discover and mitigate the effects of flow switching by trial-and-error.
+</P> <P>
+After years of <I>accumulated</I> effects of hidden <I>flow-switching</I> semantics,. Internet-facing applications mostly have adopted a degree of flow-friendly behavior. The introduction of end-to-end encryption (i.e. HTTPS with SSL/TLS)
+the high cost of establishing an encrypted connection made such applications adapt to flow switching.
+</P> <P>
+There is however a type of applications that do not fall into the above categories,. and these are primarily enterprise applications that are designed to run within confined networks protected at the perimeter. These applications rely on the packet-switching semantics of their enterprise networks to achieve gains in performance (e.g. latency) and reliability (e.g. high-availability clusters). This category of applications will fail in the presence of flow switching, and/or will impact the infrastructure that relies on flow-switching by violating the infrastructure's assumptions about customer traffic patterns etc.
+Software-Defined network designers often rely on packet traces, samples of customer payload they collected on the Internet, making lump-sided assumptions that will not represent typical enterprise payload behavior.
+</P>
+
+<H1>Recap</H1>
+
+<P>
+In conclusion, it seems that all applications with origins in the Internet, mostly follow the flow-switching paradigm, and should play nice with any additional network element adopting flow switching principles (e.g. to improve efficiency, performance).
+</P> <P>
+There is however another set of use cases, that are architected to run in close-knit localized sub-nets. Some of these may be connected to the Internet, but will refrain from traversing it for the majority of its traffic. Such applications rely on the local subnet performance practically identical to wire speed, and on the complete freedom of peer associations (e.g. unlimited number of flows and <I>their directions</I>).
+For the remainder of this paper, we will refer to these as "enterprise" applications, although they could include scientific (e.g. HPC) and even Internet infrastructure (e.g. load-balanced server clusters). Such enterprise applications anticipate security policy enforcement to happen on the perimeter to the subnet, while the communications between the peers within the subnet are assumed to exhibit classical packet switching semantics. Applying flow-switching methodologies to network elements will thus impair their ability to efficiently perform such enterprise applications.
+</P> <P>
+Up until now, we (and others) have been hoping to address both Internet-centric and enterprise applications with a single solution. Going forward however, it becomes increasingly clear that a different, targeted service paradigm will serve enterprise applications better (and cheaper) than the solutions that originate in the internet-centric flow-switching discipline. Presently there are at least two parallel (independent) initiative vying to solve the enterprise challenge: one is the 
+<I>Layer-2 Network Virtualization</I>
+project which aims to return to packet-switching discipline for select virtual subnets, while the other is building 
+<I>High-Performance Computing</I>
+targeted solution using dedicated off-the-shelf NICs and switches entirely, added to the conventional Virtual Network components.
+</P> 
+
+<H1>The need for speed</H1>
+<P>
+Independently, there is an effort to build a 
+<I>Network Virtualization</I>
+solution that will perform at 100 Gbps speeds. This effort is far from trivial, in fact there is even doubt it is achievable. Looking at the 100 Gbps objective through the lenses of Internet vs. Enterprise application classes however suggests that the later,
+i.e. Enterprise application class is far more likely to be in a position to take advantage of the break-neck speed, whereas Internet-centric applications will continue to be held back by the speed limitations in the remainder of the Internet infrastructure.
+What can be proposed hence, is to focus the effort for 100 Gbps capability on the Enterprise class of applications, and incorporate it with the two related efforts of 
+<I>Layer-2 Network Virtualization</I> and <I>High-Performance Computing</I>
+capable subnets. Incidentally, the complexity of Layer-2 (pure packet-switching) forwarding is a much lower than flow-switching, and is expected to be easier to implement for the higher speed grade.
+</P>
+<H1>Additional Reading</H1>
+<UL>
+<LI><A HREF="https://www.ietf.org/rfc/rfc3439.txt">
+IETF RFC 3439</A> Section 5 - Packet vs. Circuit Switching, Fundamental Differences
+<LI> <A HREF="https://www.usenix.org/conference/nsdi18/presentation/firestone">
+Usenix conference 2018, Microsoft: Unified Flow Table</A> about flow switching use for improving performance.
+</UL>
+</P>
