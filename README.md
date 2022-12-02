@@ -1,2 +1,3 @@
 # leorosen.github.io
-Personal Blog
+Leonid Rosenboim Personal Blog
+Updated: 2022-12-01
